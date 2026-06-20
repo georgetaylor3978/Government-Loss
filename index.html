@@ -1,0 +1,226 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Government Loss Dashboard &mdash; Public Accounts of Canada</title>
+    <meta name="description" content="Interactive dashboard tracking losses of public money or property as reported in the Public Accounts of Canada, 2006&ndash;2025.">
+    <meta name="keywords" content="Canada, government loss, public accounts, fraud, waste, federal spending">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+<!-- Loading -->
+<div class="loading-overlay" id="loadingOverlay">
+    <img src="wizred.png" alt="WizRed" style="height:54px;object-fit:contain;opacity:.7;">
+    <div class="spinner"></div>
+    <div class="loading-text">Loading Public Accounts Data&hellip;</div>
+</div>
+
+<!-- HEADER -->
+<header class="header" id="pageHeader">
+    <div class="header-inner">
+        <div class="header-left">
+            <img src="wizred.png" alt="WizRed" class="brand-logo" id="brandLogo">
+            <div class="brand-text">
+                <h1 class="brand-title">Losses of Public Money &amp; Property &mdash; <span>Public Accounts of Canada</span></h1>
+                <div class="brand-subtitle">Federal Government Loss Reporting &middot; 2006&ndash;2025 &middot; Open Canada Data</div>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="data-status" id="dataStatus">&#9201; Loading&hellip;</div>
+            <a href="https://open.canada.ca/data/en/dataset/3b936f0d-4ea2-4aca-b60e-e53aead6ad69" target="_blank" rel="noopener noreferrer" class="btn-icon" title="Source Data">&#128202; Source</a>
+            <button id="themeToggle" class="btn-icon" title="Toggle Light/Dark Mode">&#127764; Dark</button>
+        </div>
+    </div>
+</header>
+
+<!-- CONTROLS -->
+<section class="controls-bar" id="controlsBar">
+    <div class="controls-inner">
+
+        <div class="ctrl-group">
+            <span class="ctrl-label">Year From</span>
+            <input type="number" id="yearFrom" min="2006" max="2025" value="2006" step="1">
+        </div>
+
+        <div class="ctrl-group">
+            <span class="ctrl-label">Year To</span>
+            <input type="number" id="yearTo" min="2006" max="2025" value="2025" step="1">
+        </div>
+
+        <div class="ctrl-group">
+            <span class="ctrl-label">Loss Type (Parent)</span>
+            <div class="select-wrap">
+                <select id="lossTypeFilter"><option value="">&#8249;All Loss Types&#8250;</option></select>
+            </div>
+        </div>
+
+        <div class="ctrl-group">
+            <span class="ctrl-label">Incident (Child)</span>
+            <div class="select-wrap">
+                <select id="incidentFilter"><option value="">&#8249;All Incidents&#8250;</option></select>
+            </div>
+        </div>
+
+        <div class="ctrl-group">
+            <span class="ctrl-label">Portfolio (Parent)</span>
+            <div class="select-wrap">
+                <select id="portfolioFilter"><option value="">&#8249;All Portfolios&#8250;</option></select>
+            </div>
+        </div>
+
+        <div class="ctrl-group">
+            <span class="ctrl-label">Department (Child)</span>
+            <div class="select-wrap">
+                <select id="deptFilter"><option value="">&#8249;All Departments&#8250;</option></select>
+            </div>
+        </div>
+
+        <div class="ctrl-group">
+            <span class="ctrl-label">&nbsp;</span>
+            <button class="btn-reset" id="resetBtn">&#8634; Reset</button>
+        </div>
+
+    </div>
+</section>
+
+<!-- KPI STRIP -->
+<div class="summary-strip" id="kpiStrip">
+    <div class="kpi-card gold">
+        <div class="kpi-icon">&#128196;</div>
+        <div class="kpi-body">
+            <div class="kpi-value" id="kpiTotalLoss">—</div>
+            <div class="kpi-label">Total Loss</div>
+        </div>
+    </div>
+    <div class="kpi-card green">
+        <div class="kpi-icon">&#9994;</div>
+        <div class="kpi-body">
+            <div class="kpi-value" id="kpiRecovered">—</div>
+            <div class="kpi-label">Total Recovered</div>
+        </div>
+    </div>
+    <div class="kpi-card rose">
+        <div class="kpi-icon">&#128308;</div>
+        <div class="kpi-body">
+            <div class="kpi-value" id="kpiNetLoss">—</div>
+            <div class="kpi-label">Net Loss</div>
+        </div>
+    </div>
+    <div class="kpi-card blue">
+        <div class="kpi-icon">&#128203;</div>
+        <div class="kpi-body">
+            <div class="kpi-value" id="kpiIncidents">—</div>
+            <div class="kpi-label">Incidents</div>
+        </div>
+    </div>
+    <div class="kpi-card amber">
+        <div class="kpi-icon">&#128269;</div>
+        <div class="kpi-body">
+            <div class="kpi-value" id="kpiRecoveryRate">—</div>
+            <div class="kpi-label">Recovery Rate</div>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN -->
+<main class="main">
+
+    <!-- Row 1: Trend over time -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title"><span class="card-title-icon">&#128200;</span> Annual Loss Trend</div>
+            <div style="display:flex;gap:8px;align-items:center;">
+                <label style="font-size:.72rem;color:var(--text-muted);font-weight:600;">View:</label>
+                <div class="select-wrap" style="min-width:130px;">
+                    <select id="trendMetric" style="background:var(--bg-input);border:1px solid var(--border);color:var(--text-primary);border-radius:var(--r-sm);padding:5px 26px 5px 10px;font-size:.78rem;font-family:var(--font);appearance:none;-webkit-appearance:none;outline:none;">
+                        <option value="loss">Total Loss</option>
+                        <option value="netLoss">Net Loss</option>
+                        <option value="recovered">Recovered</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="chart-wrap"><canvas id="trendChart" height="90"></canvas></div>
+        <img src="wizred.png" alt="" class="chart-watermark">
+    </div>
+
+    <!-- Row 2: Loss Type breakdown + Portfolio breakdown -->
+    <div class="grid-2">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title"><span class="card-title-icon">&#128202;</span> Loss by Type</div>
+            </div>
+            <div class="chart-wrap"><canvas id="lossTypeChart" height="160"></canvas></div>
+            <img src="wizred.png" alt="" class="chart-watermark">
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title"><span class="card-title-icon">&#127963;</span> Loss by Portfolio</div>
+            </div>
+            <div class="chart-wrap"><canvas id="portfolioChart" height="160"></canvas></div>
+            <img src="wizred.png" alt="" class="chart-watermark">
+        </div>
+    </div>
+
+    <!-- Row 3: Top 10 Departments -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title"><span class="card-title-icon">&#127942;</span> Top 10 Departments by Total Loss</div>
+            <div style="font-size:.7rem;color:var(--text-muted);">Gross Loss &bull; Recovered &bull; Net Loss</div>
+        </div>
+        <div class="tbl-wrap">
+            <table id="top10Table">
+                <thead>
+                    <tr>
+                        <th style="width:36px;">#</th>
+                        <th>Department</th>
+                        <th>Portfolio</th>
+                        <th class="tbl-amount">Total Loss</th>
+                        <th class="tbl-amount">Recovered</th>
+                        <th class="tbl-amount">Net Loss</th>
+                        <th style="width:130px;">Share</th>
+                    </tr>
+                </thead>
+                <tbody id="top10Body"></tbody>
+            </table>
+        </div>
+        <img src="wizred.png" alt="" class="chart-watermark">
+    </div>
+
+    <!-- Row 4: Loss by Incident stacked + Dept scatter -->
+    <div class="grid-2">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title"><span class="card-title-icon">&#128221;</span> Incident Breakdown Over Time</div>
+            </div>
+            <div class="chart-wrap"><canvas id="incidentTrendChart" height="180"></canvas></div>
+            <img src="wizred.png" alt="" class="chart-watermark">
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title"><span class="card-title-icon">&#128104;&#8205;&#128188;</span> Top 15 Departments — Bar</div>
+            </div>
+            <div class="chart-wrap"><canvas id="deptBarChart" height="180"></canvas></div>
+            <img src="wizred.png" alt="" class="chart-watermark">
+        </div>
+    </div>
+
+    <!-- Row 5: Recoverable vs Recovered over time -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title"><span class="card-title-icon">&#9989;</span> Recovery Analysis — Loss vs Recovered vs Recoverable</div>
+        </div>
+        <div class="chart-wrap"><canvas id="recoveryChart" height="90"></canvas></div>
+        <img src="wizred.png" alt="" class="chart-watermark">
+    </div>
+
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

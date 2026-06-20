@@ -1,0 +1,130 @@
+﻿# TABLE: IncidentType
+# Description: Maps each Incident (child) to its parent LossType category
+# Columns: IncidentCode, Incident, LossTypeCode, LossType
+# Usage: Join GovtLossData.csv on Incident field
+
+TableName,IncidentCode,Incident,LossTypeCode,LossType
+IncidentType,INC-001,Accidental Loss Destruction or Damage,LT-001,Property Loss
+IncidentType,INC-002,"Offence, illegal act or accident",LT-002,"Offence, illegal act or accident"
+IncidentType,INC-003,Offence or Other Illegal Act,LT-001,Property Loss
+IncidentType,INC-004,Loss of revenues due to Customs Act infractions,LT-003,Revenue loss (fraud or willful misrepresentation)
+IncidentType,INC-005,Loss of revenues dues to Customs Act infractions Non report/Smuggling,LT-003,Revenue loss (fraud or willful misrepresentation)
+IncidentType,INC-006,Fraudulent use of customer's weather account,LT-003,Revenue loss (fraud or willful misrepresentation)
+IncidentType,INC-007,Loss of revenues due to erroneous credit card number,LT-003,Revenue loss (fraud or willful misrepresentation)
+IncidentType,INC-008,Cases before the Courts (Canada Revenue Agency's estimate of the amount of tax evaded or refunds fraudulently obtained),LT-003,Revenue loss (fraud or willful misrepresentation)
+IncidentType,INC-009,Court convictions (amount of tax evaded or refunds fraudulently obtained as determined by the Court),LT-003,Revenue loss (fraud or willful misrepresentation)
+IncidentType,INC-010,Cases before the Courts (CRA's estimate of the amount of tax evaded or refunds fraudulently obtained),LT-003,Revenue loss (fraud or willful misrepresentation)
+IncidentType,INC-011,Loss of revenues due to the GCSurplus program,LT-003,Revenue loss (fraud or willful misrepresentation)
+
+# TABLE: Department
+# Description: Maps each department number to its name and parent portfolio
+# Columns: DeptNbr, Department, PortfolioCode, Portfolio
+# Usage: Join GovtLossData.csv on Dept-nbr_No-min field
+
+TableName,DeptNbr,Department,PortfolioCode,Portfolio
+Department,1,Department of Agriculture and Agri-Food,2,Agriculture and Agri-Food
+Department,2,Office of the Auditor General,7,Finance
+Department,3,Canadian International Development Agency,9,Global Affairs
+Department,4,Public Service Commission,19,Privy Council
+Department,5,"Department of Foreign Affairs, Trade and Development",9,Global Affairs
+Department,6,Department of Finance,7,Finance
+Department,7,Department of the Environment,6,Environment and Climate Change
+Department,8,Office of the Governor General's Secretary,10,Governor General
+Department,9,The Senate,18,Parliament
+Department,11,Office of the Superintendent of Financial Institutions,7,Finance
+Department,12,Economic Development Agency of Canada for the Regions of Quebec,14,Industry & Economic Development
+Department,13,Department of Justice,15,Justice
+Department,14,Department of Employment and Social Development,12,Employment and Social Development
+Department,15,Chief Electoral Officer,33,Public Safety - Democratic Institutions and Intergovernmental Affairs
+Department,16,Canadian Radio-television and Telecommunications Commission,4,Heritage
+Department,17,Library of Parliament,18,Parliament
+Department,18,Department of National Defence,16,National Defence
+Department,19,Office of the Director of Public Prosecutions,15,Justice
+Department,21,Department of Veterans Affairs,24,Veterans Affairs
+Department,22,Department of Health,11,Health
+Department,23,Atlantic Canada Opportunities Agency,14,Industry & Economic Development
+Department,25,Privy Council Office,19,Privy Council
+Department,27,Natural Sciences and Engineering Research Council,14,Industry & Economic Development
+Department,30,Royal Canadian Mounted Police,21,Public Safety - Democratic Institutions and Intergovernmental Affairs
+Department,32,Immigration and Refugee Board of Canada,5,"Immigration, Refugees, and Citizenship"
+Department,33,Department of Industry,14,Industry & Economic Development
+Department,34,Department of Transport,22,Transport
+Department,35,National Research Council of Canada,14,Industry & Economic Development
+Department,37,Telefilm Canada,4,Heritage
+Department,39,National Film Board,4,Heritage
+Department,40,Canadian Transportation Agency,22,Transport
+Department,41,Department of Natural Resources,17,Energy and Natural Resources
+Department,42,Department of Crown-Indigenous Relations and Northern Affairs,13,Indigenous
+Department,43,Canadian Intergovernmental Conference Secretariat,21,Public Safety - Democratic Institutions and Intergovernmental Affairs
+Department,44,Department of Western Economic Diversification,14,Industry & Economic Development
+Department,45,Canadian International Trade Tribunal,7,Finance
+Department,46,Office of the Public Sector Integrity Commissioner,23,Treasury Board
+Department,47,Canadian Nuclear Safety Commission,17,Energy and Natural Resources
+Department,50,Department of Citizenship and Immigration,5,"Immigration, Refugees, and Citizenship"
+Department,51,Office of the Commissioner for Federal Judicial Affairs,15,Justice
+Department,52,Canada School of Public Service,23,Treasury Board
+Department,53,Correctional Service of Canada,21,Public Safety - Democratic Institutions and Intergovernmental Affairs
+Department,54,Statistics Canada,14,Industry & Economic Development
+Department,56,Treasury Board Secretariat,23,Treasury Board
+Department,57,National Parole Board,21,Public Safety - Democratic Institutions and Intergovernmental Affairs
+Department,58,Public Service Labour Relations Board,4,Heritage
+Department,60,Canada Industrial Relations Board,12,Employment and Social Development
+Department,61,Canadian Institutes of Health Research,11,Health
+Department,62,Federal Economic Development Agency for Southern Ontario,14,Industry & Economic Development
+Department,63,Social Sciences and Humanities Research Council,14,Industry & Economic Development
+Department,67,House of Commons,18,Parliament
+Department,74,National Energy Board,17,Energy and Natural Resources
+Department,75,Canadian Human Rights Commission,15,Justice
+Department,76,Office of the Commissioner of Official Languages,21,Public Safety - Democratic Institutions and Intergovernmental Affairs
+Department,78,Canadian Northern Economic Development Agency,14,Industry & Economic Development
+Department,80,Supreme Court of Canada,15,Justice
+Department,83,Status of Women-Office of the Co-ordinator,32,"Women, Gender Equality and Youth"
+Department,85,Canada Border Services Agency,21,Public Safety - Democratic Institutions and Intergovernmental Affairs
+Department,86,Department of Fisheries and Oceans,8,"Fisheries, Oceans and the Canadian Coast Guard"
+Department,88,Department of Public Safety and Emergency Preparedness,21,Public Safety - Democratic Institutions and Intergovernmental Affairs
+Department,91,Canada Mortgage and Housing Corporation,29,"Housing, Infrastructure and Communities"
+Department,95,Canadian Security Intelligence Service,21,Public Safety - Democratic Institutions and Intergovernmental Affairs
+Department,96,Offices of the Information and Privacy Commissioners of Canada,15,Justice
+Department,101,Canadian Transportation Accident Investigation and Safety Board,19,Privy Council
+Department,103,Security Intelligence Review Committee,19,Privy Council
+Department,109,Patented Medicine Prices Review Board,11,Health
+Department,116,Copyright Board,14,Industry & Economic Development
+Department,119,Canadian Space Agency,14,Industry & Economic Development
+Department,122,Canada Revenue Agency (Adm. Activities),3,National Revenue
+Department,124,Parks Canada Agency,37,Parks Canada
+Department,127,Public Works and Government Services,20,Public Services and Procurement
+Department,129,Registry of the Specific Claims Tribunal,13,Indigenous
+Department,130,Canada Revenue Agency,3,National Revenue
+Department,131,Law Commission of Canada,15,Justice
+Department,133,Canadian Grain Commission,2,Agriculture and Agri-Food
+Department,135,Department of Canadian Heritage,4,Heritage
+Department,136,Canadian Food Inspection Agency,11,Health
+Department,137,Military Police Complaints Commission,16,National Defence
+Department,138,Military Grievances External Review Committee,16,National Defence
+Department,139,Financial Transactions and Reports Analysis Centre of Canada,7,Finance
+Department,141,Financial Consumer Agency of Canada,7,Finance
+Department,142,Office of Infrastructure of Canada,29,"Housing, Infrastructure and Communities"
+Department,144,Courts Administration Service,15,Justice
+Department,145,Library and Archives of Canada,4,Heritage
+Department,146,Public Service Human Resources Management Agency of Canada,23,Treasury Board
+Department,148,Public Health Agency of Canada,11,Health
+Department,152,Assisted Human Reproduction Agency of Canada,11,Health
+Department,154,Office of the Commissioner of Lobbying,23,Treasury Board
+Department,163,Shared Services Canada,20,Public Services and Procurement
+Department,165,Communications Security Establishment,16,National Defence
+Department,170,Administrative Tribunals Support Service of Canada,15,Justice
+Department,171,Canadian High Arctic Research Station,13,Indigenous
+Department,176,Parliamentary Protective Service,18,Parliament
+Department,180,Invest in Canada Hub,9,Global Affairs
+Department,183,Office of the Parliamentary Budget Officer,18,Parliament
+Department,190,Department for Women and Gender Equality,32,"Women, Gender Equality and Youth"
+Department,191,Department of Indigenous Services,31,Indigenous Services
+Department,195,Canadian Energy Regulator,17,Energy and Natural Resources
+Department,200,Federal Economic Development Agency for Northern Ontario,14,Industry & Economic Development
+Department,240,Pacific Economic Development Agency of Canada,14,Industry & Economic Development
+Department,242,"Department of Housing, Infrastructure and Communities",29,"Housing, Infrastructure and Communities"
+Department,007a,Impact Assessment Agency of Canada,6,Environment and Climate Change
+Department,021a,Veterans Review and Appeal Board,24,Veterans Affairs
+Department,042a,Department of Crown-Indigenous Relations and Northern Affairs,13,Indigenous
+Department,088a,Office of the Correctional Investigator of Canada,21,Public Safety - Democratic Institutions and Intergovernmental Affairs
+Department,088c,Civilian Review and Complaints Commission for the Royal Canadian Mounted Police,21,Public Safety - Democratic Institutions and Intergovernmental Affairs
