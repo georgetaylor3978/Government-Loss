@@ -9,11 +9,62 @@ Chart.defaults.font.family = "'Inter', sans-serif";
 Chart.defaults.color = 'rgba(139,154,184,1)';
 Chart.defaults.plugins.legend.display = false;
 
-// ── State ───────────────────────────────────────────────────────
-let DB = null;           // full data.json blob
-let activeRecords = [];  // filtered record array
+// ── Watermark + Datasource Footer Plugin ────────────────────────
+// Draws on every chart canvas:
+//   - a circular WizRed logo watermark (bottom-right)
+//   - a datasource label (bottom-centre)
+const wizredImg = new Image();
+wizredImg.src = 'wizred.png';
 
-// Filter state
+const chartBrandPlugin = {
+    id: 'chartBrand',
+    afterDraw(chart) {
+        const { ctx, chartArea, width, height } = chart;
+        if (!chartArea) return;
+
+        ctx.save();
+
+        // ── Datasource text (bottom centre of canvas) ───────────
+        const dsText = 'Federal Government Loss Reporting \u2022 Open Canada Data';
+        const textY  = height - 5;
+        ctx.font = '500 9.5px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        ctx.fillStyle = isDark() ? 'rgba(80,95,125,0.85)' : 'rgba(100,115,145,0.75)';
+        ctx.fillText(dsText, width / 2, textY);
+
+        // ── Circular logo watermark (bottom-right corner) ────────
+        if (!wizredImg.complete || !wizredImg.naturalWidth) {
+            ctx.restore();
+            return;
+        }
+
+        const logoSize = 36;          // diameter of the circle
+        const margin   = 12;          // from bottom-right edge
+        const cx = width  - margin - logoSize / 2;
+        const cy = height - margin - logoSize / 2 - 12;  // sit above footer text
+
+        // Clip to circle
+        ctx.beginPath();
+        ctx.arc(cx, cy, logoSize / 2, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+
+        // Draw image inside circle
+        ctx.globalAlpha = isDark() ? 0.14 : 0.09;
+        ctx.drawImage(wizredImg, cx - logoSize / 2, cy - logoSize / 2, logoSize, logoSize);
+        ctx.globalAlpha = 1;
+
+        ctx.restore();
+    }
+};
+
+Chart.register(chartBrandPlugin);
+
+// ── State ───────────────────────────────────────────────────────
+let DB = null;
+let activeRecords = [];
+
 let F = {
     yearFrom:  2006,
     yearTo:    2025,
@@ -42,15 +93,12 @@ function fmtFull(n) {
 }
 function pct(n, d) { return d === 0 ? '0%' : (n / d * 100).toFixed(1) + '%'; }
 
-// Record column indices
 const C = { YEAR:0, LT:1, INC:2, DEPT:3, PORT:4, LOSS:5, REC:6, NET:7, RECOVERABLE:8 };
 
-// ── Charts Registry ─────────────────────────────────────────────
 const CHARTS = {};
 function destroyChart(id) { if (CHARTS[id]) { CHARTS[id].destroy(); delete CHARTS[id]; } }
 
 function isDark() { return !document.body.classList.contains('light'); }
-
 function gridColor() { return isDark() ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.07)'; }
 function tickColor() { return isDark() ? '#4f5f7a' : '#6b7a95'; }
 
@@ -64,12 +112,12 @@ async function loadData() {
         populateFilters();
         applyFilters();
 
-        document.getElementById('dataStatus').textContent = '✔ ' + DB.meta.recordCount.toLocaleString() + ' records';
+        document.getElementById('dataStatus').textContent = '\u2714 ' + DB.meta.recordCount.toLocaleString() + ' records';
         document.getElementById('dataStatus').classList.add('ready');
         document.getElementById('loadingOverlay').classList.add('hidden');
 
     } catch (e) {
-        document.getElementById('dataStatus').textContent = '✖ Load error';
+        document.getElementById('dataStatus').textContent = '\u2716 Load error';
         document.getElementById('dataStatus').classList.add('error');
         document.getElementById('loadingOverlay').querySelector('.loading-text').textContent = 'Error loading data. Is data.json present?';
         console.error(e);
@@ -98,10 +146,10 @@ function fillSelect(id, items) {
 
 // ── Filter Application ───────────────────────────────────────────
 function applyFilters() {
-    const ltIdx  = F.lossType  ? DB.lossTypes.indexOf(F.lossType)   : -1;
-    const incIdx = F.incident  ? DB.incidents.indexOf(F.incident)   : -1;
-    const portIdx= F.portfolio ? DB.portfolios.indexOf(F.portfolio) : -1;
-    const deptIdx= F.dept      ? DB.depts.indexOf(F.dept)           : -1;
+    const ltIdx   = F.lossType  ? DB.lossTypes.indexOf(F.lossType)   : -1;
+    const incIdx  = F.incident  ? DB.incidents.indexOf(F.incident)   : -1;
+    const portIdx = F.portfolio ? DB.portfolios.indexOf(F.portfolio) : -1;
+    const deptIdx = F.dept      ? DB.depts.indexOf(F.dept)           : -1;
 
     activeRecords = DB.records.filter(r => {
         if (r[C.YEAR] < F.yearFrom || r[C.YEAR] > F.yearTo) return false;
@@ -115,7 +163,7 @@ function applyFilters() {
     renderAll();
 }
 
-// ── Cascade: when portfolio selected, filter dept list ───────────
+// ── Cascade: portfolio → dept ────────────────────────────────────
 function cascadeDeptFilter() {
     const portName = F.portfolio;
     let depts = DB.depts.filter(x => x !== 'Unknown');
@@ -123,9 +171,7 @@ function cascadeDeptFilter() {
     if (portName) {
         const portIdx = DB.portfolios.indexOf(portName);
         const deptSet = new Set();
-        DB.records.forEach(r => {
-            if (r[C.PORT] === portIdx) deptSet.add(DB.depts[r[C.DEPT]]);
-        });
+        DB.records.forEach(r => { if (r[C.PORT] === portIdx) deptSet.add(DB.depts[r[C.DEPT]]); });
         depts = depts.filter(d => deptSet.has(d)).sort();
     } else {
         depts = depts.sort();
@@ -134,7 +180,7 @@ function cascadeDeptFilter() {
     document.getElementById('deptFilter').value = F.dept || '';
 }
 
-// ── Cascade: when losstype selected, filter incident list ─────────
+// ── Cascade: lossType → incident ────────────────────────────────
 function cascadeIncFilter() {
     const ltName = F.lossType;
     let incs = DB.incidents.filter(x => x !== 'Unknown');
@@ -142,9 +188,7 @@ function cascadeIncFilter() {
     if (ltName) {
         const ltIdx = DB.lossTypes.indexOf(ltName);
         const incSet = new Set();
-        DB.records.forEach(r => {
-            if (r[C.LT] === ltIdx) incSet.add(DB.incidents[r[C.INC]]);
-        });
+        DB.records.forEach(r => { if (r[C.LT] === ltIdx) incSet.add(DB.incidents[r[C.INC]]); });
         incs = incs.filter(i => incSet.has(i)).sort();
     } else {
         incs = incs.sort();
@@ -165,6 +209,9 @@ function renderAll() {
     renderRecoveryChart();
 }
 
+// ── Shared chart padding to make room for footer text ────────────
+const FOOTER_PAD = { bottom: 22 };
+
 // ── KPIs ──────────────────────────────────────────────────────────
 function renderKPIs() {
     let totalLoss = 0, totalRec = 0, totalNet = 0;
@@ -173,7 +220,6 @@ function renderKPIs() {
         totalRec  += r[C.REC];
         totalNet  += r[C.NET];
     });
-
     document.getElementById('kpiTotalLoss').textContent    = fmt(totalLoss);
     document.getElementById('kpiRecovered').textContent    = fmt(totalRec);
     document.getElementById('kpiNetLoss').textContent      = fmt(totalNet);
@@ -187,9 +233,7 @@ function renderTrendChart() {
     const col = metric === 'loss' ? C.LOSS : metric === 'netLoss' ? C.NET : C.REC;
 
     const byYear = {};
-    activeRecords.forEach(r => {
-        byYear[r[C.YEAR]] = (byYear[r[C.YEAR]] || 0) + r[col];
-    });
+    activeRecords.forEach(r => { byYear[r[C.YEAR]] = (byYear[r[C.YEAR]] || 0) + r[col]; });
 
     const years  = Object.keys(byYear).map(Number).sort((a,b) => a-b);
     const values = years.map(y => byYear[y]);
@@ -223,19 +267,13 @@ function renderTrendChart() {
         options: {
             responsive: true,
             animation: { duration: 600 },
+            layout: { padding: FOOTER_PAD },
             plugins: {
-                tooltip: {
-                    callbacks: {
-                        label: ctx => ' ' + fmtFull(ctx.raw)
-                    }
-                }
+                tooltip: { callbacks: { label: ctx => ' ' + fmtFull(ctx.raw) } }
             },
             scales: {
                 x: { grid: { color: gridColor() }, ticks: { color: tickColor() } },
-                y: {
-                    grid: { color: gridColor() },
-                    ticks: { color: tickColor(), callback: v => fmt(v) }
-                }
+                y: { grid: { color: gridColor() }, ticks: { color: tickColor(), callback: v => fmt(v) } }
             }
         }
     });
@@ -261,6 +299,7 @@ function renderLossTypeChart() {
             responsive: true,
             animation: { duration: 600 },
             cutout: '62%',
+            layout: { padding: FOOTER_PAD },
             plugins: {
                 legend: {
                     display: true,
@@ -282,7 +321,7 @@ function renderPortfolioChart() {
     });
 
     const entries = Object.entries(byPort).sort((a,b) => b[1]-a[1]).slice(0, 12);
-    const labels  = entries.map(e => e[0].length > 30 ? e[0].slice(0,28)+'…' : e[0]);
+    const labels  = entries.map(e => e[0].length > 30 ? e[0].slice(0,28)+'\u2026' : e[0]);
     const values  = entries.map(e => e[1]);
     const colors  = values.map((_, i) => PALETTE[i % PALETTE.length]);
 
@@ -294,6 +333,7 @@ function renderPortfolioChart() {
             responsive: true,
             animation: { duration: 600 },
             indexAxis: 'y',
+            layout: { padding: FOOTER_PAD },
             plugins: {
                 legend: { display: false },
                 tooltip: { callbacks: { label: ctx => ' ' + fmtFull(ctx.raw) } }
@@ -324,17 +364,16 @@ function renderTop10Table() {
 
     sorted.forEach((d, i) => {
         const tr = document.createElement('tr');
-        const rank = i < 3 ? `<span class="rank-badge top3">${i+1}</span>` : `<span class="rank-badge">${i+1}</span>`;
-        const bar  = `<div class="progress-bar-wrap"><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${(d.loss/maxLoss*100).toFixed(1)}%"></div></div><span style="font-size:.65rem;color:var(--text-muted);min-width:36px;text-align:right;">${pct(d.loss,maxLoss)}</span></div>`;
-        tr.innerHTML = `
-            <td>${rank}</td>
-            <td style="color:var(--text-primary);font-weight:600;">${d.name || 'Unknown'}</td>
-            <td style="font-size:.75rem;color:var(--text-muted);">${d.port || '—'}</td>
-            <td class="tbl-amount loss">${fmtFull(d.loss)}</td>
-            <td class="tbl-amount recovered">${fmtFull(d.rec)}</td>
-            <td class="tbl-amount net">${fmtFull(d.net)}</td>
-            <td>${bar}</td>
-        `;
+        const rank = i < 3 ? '<span class="rank-badge top3">' + (i+1) + '</span>' : '<span class="rank-badge">' + (i+1) + '</span>';
+        const bar  = '<div class="progress-bar-wrap"><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:' + (d.loss/maxLoss*100).toFixed(1) + '%"></div></div><span style="font-size:.65rem;color:var(--text-muted);min-width:36px;text-align:right;">' + pct(d.loss,maxLoss) + '</span></div>';
+        tr.innerHTML =
+            '<td>' + rank + '</td>' +
+            '<td style="color:var(--text-primary);font-weight:600;">' + (d.name || 'Unknown') + '</td>' +
+            '<td style="font-size:.75rem;color:var(--text-muted);">' + (d.port || '\u2014') + '</td>' +
+            '<td class="tbl-amount loss">' + fmtFull(d.loss) + '</td>' +
+            '<td class="tbl-amount recovered">' + fmtFull(d.rec) + '</td>' +
+            '<td class="tbl-amount net">' + fmtFull(d.net) + '</td>' +
+            '<td>' + bar + '</td>';
         body.appendChild(tr);
     });
 }
@@ -354,13 +393,12 @@ function renderIncidentTrendChart() {
     const years = Object.keys(byYear).map(Number).sort((a,b)=>a-b);
     const incs  = [...incSet].filter(x => x !== 'Unknown');
 
-    // keep top 6 by total
     const totals = {};
     incs.forEach(inc => { totals[inc] = years.reduce((s,y) => s + (byYear[y]?.[inc] || 0), 0); });
     const top6 = incs.sort((a,b) => totals[b]-totals[a]).slice(0,6);
 
     const datasets = top6.map((inc, i) => ({
-        label: inc.length > 40 ? inc.slice(0,38)+'…' : inc,
+        label: inc.length > 40 ? inc.slice(0,38)+'\u2026' : inc,
         data: years.map(y => byYear[y]?.[inc] || 0),
         backgroundColor: PALETTE[i % PALETTE.length] + 'cc',
         borderColor: PALETTE[i % PALETTE.length],
@@ -374,6 +412,7 @@ function renderIncidentTrendChart() {
         options: {
             responsive: true,
             animation: { duration: 600 },
+            layout: { padding: FOOTER_PAD },
             plugins: {
                 legend: {
                     display: true,
@@ -402,7 +441,7 @@ function renderDeptBarChart() {
     });
 
     const sorted = Object.entries(byDept).sort((a,b) => b[1]-a[1]).slice(0, 15);
-    const labels = sorted.map(e => e[0].length > 28 ? e[0].slice(0,26)+'…' : e[0]);
+    const labels = sorted.map(e => e[0].length > 28 ? e[0].slice(0,26)+'\u2026' : e[0]);
     const values = sorted.map(e => e[1]);
 
     destroyChart('deptBar');
@@ -423,6 +462,7 @@ function renderDeptBarChart() {
             responsive: true,
             animation: { duration: 600 },
             indexAxis: 'y',
+            layout: { padding: FOOTER_PAD },
             plugins: {
                 legend: { display: false },
                 tooltip: { callbacks: { label: ctx => ' ' + fmtFull(ctx.raw) } }
@@ -483,6 +523,7 @@ function renderRecoveryChart() {
         options: {
             responsive: true,
             animation: { duration: 600 },
+            layout: { padding: FOOTER_PAD },
             plugins: {
                 legend: {
                     display: true,
@@ -551,15 +592,14 @@ function bindControls() {
     btn.addEventListener('click', () => {
         document.body.classList.toggle('light');
         const isLight = document.body.classList.contains('light');
-        btn.textContent = isLight ? '🌙 Dark' : '☀️ Light';
+        btn.textContent = isLight ? '\uD83C\uDF19 Dark' : '\u2600\uFE0F Light';
         localStorage.setItem('govtLossTheme', isLight ? 'light' : 'dark');
         renderAll();
     });
 
-    // Restore theme
     if (localStorage.getItem('govtLossTheme') === 'light') {
         document.body.classList.add('light');
-        btn.textContent = '🌙 Dark';
+        btn.textContent = '\uD83C\uDF19 Dark';
     }
 }
 

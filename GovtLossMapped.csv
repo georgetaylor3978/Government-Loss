@@ -1,8 +1,8 @@
-﻿# TABLE: IncidentType
-# Description: Maps each Incident (child) to its parent LossType category
-# Columns: IncidentCode, Incident, LossTypeCode, LossType
-# Usage: Join GovtLossData.csv on Incident field
-
+﻿# TABLE: IncidentType,,,,
+# Description: Maps each Incident (child) to its parent LossType category,,,,
+# Columns: IncidentCode, Incident, LossTypeCode, LossType,
+# Usage: Join GovtLossData.csv on Incident field,,,,
+,,,,
 TableName,IncidentCode,Incident,LossTypeCode,LossType
 IncidentType,INC-001,Accidental Loss Destruction or Damage,LT-001,Property Loss
 IncidentType,INC-002,"Offence, illegal act or accident",LT-002,"Offence, illegal act or accident"
@@ -15,12 +15,14 @@ IncidentType,INC-008,Cases before the Courts (Canada Revenue Agency's estimate o
 IncidentType,INC-009,Court convictions (amount of tax evaded or refunds fraudulently obtained as determined by the Court),LT-003,Revenue loss (fraud or willful misrepresentation)
 IncidentType,INC-010,Cases before the Courts (CRA's estimate of the amount of tax evaded or refunds fraudulently obtained),LT-003,Revenue loss (fraud or willful misrepresentation)
 IncidentType,INC-011,Loss of revenues due to the GCSurplus program,LT-003,Revenue loss (fraud or willful misrepresentation)
-
-# TABLE: Department
-# Description: Maps each department number to its name and parent portfolio
-# Columns: DeptNbr, Department, PortfolioCode, Portfolio
-# Usage: Join GovtLossData.csv on Dept-nbr_No-min field
-
+IncidentType,INC-012,"Losses of public money due to an offence, illegal act or accident",LT-003,Revenue loss (fraud or willful misrepresentation)
+,,,,
+,,,,
+# TABLE: Department,,,,
+# Description: Maps each department number to its name and parent portfolio,,,,
+# Columns: DeptNbr, Department, PortfolioCode, Portfolio,
+# Usage: Join GovtLossData.csv on Dept-nbr_No-min field,,,,
+,,,,
 TableName,DeptNbr,Department,PortfolioCode,Portfolio
 Department,1,Department of Agriculture and Agri-Food,2,Agriculture and Agri-Food
 Department,2,Office of the Auditor General,7,Finance
