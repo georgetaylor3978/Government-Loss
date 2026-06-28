@@ -32,7 +32,7 @@
         </div>
         <div class="header-right">
             <div class="data-status" id="dataStatus">&#9201; Loading&hellip;</div>
-            <a href="https://open.canada.ca/data/en/dataset/3b936f0d-4ea2-4aca-b60e-e53aead6ad69" target="_blank" rel="noopener noreferrer" class="btn-icon" title="Source Data">&#128202; Source</a>
+            <a href="https://open.canada.ca/data/en/dataset/024ec008-653b-4632-ade8-3d6c0c27729a/resource/885373bb-a142-4f86-bac1-d7ed6c832355" target="_blank" rel="noopener noreferrer" class="btn-icon" title="Source Data">&#128202; Source</a>
             <button id="themeToggle" class="btn-icon" title="Toggle Light/Dark Mode">&#127764; Dark</button>
         </div>
     </div>
@@ -93,35 +93,35 @@
     <div class="kpi-card gold">
         <div class="kpi-icon">&#128196;</div>
         <div class="kpi-body">
-            <div class="kpi-value" id="kpiTotalLoss">—</div>
+            <div class="kpi-value" id="kpiTotalLoss">&mdash;</div>
             <div class="kpi-label">Total Loss</div>
         </div>
     </div>
     <div class="kpi-card green">
         <div class="kpi-icon">&#9994;</div>
         <div class="kpi-body">
-            <div class="kpi-value" id="kpiRecovered">—</div>
+            <div class="kpi-value" id="kpiRecovered">&mdash;</div>
             <div class="kpi-label">Total Recovered</div>
         </div>
     </div>
     <div class="kpi-card rose">
         <div class="kpi-icon">&#128308;</div>
         <div class="kpi-body">
-            <div class="kpi-value" id="kpiNetLoss">—</div>
+            <div class="kpi-value" id="kpiNetLoss">&mdash;</div>
             <div class="kpi-label">Net Loss</div>
         </div>
     </div>
     <div class="kpi-card blue">
         <div class="kpi-icon">&#128203;</div>
         <div class="kpi-body">
-            <div class="kpi-value" id="kpiIncidents">—</div>
+            <div class="kpi-value" id="kpiIncidents">&mdash;</div>
             <div class="kpi-label">Incidents</div>
         </div>
     </div>
     <div class="kpi-card amber">
         <div class="kpi-icon">&#128269;</div>
         <div class="kpi-body">
-            <div class="kpi-value" id="kpiRecoveryRate">—</div>
+            <div class="kpi-value" id="kpiRecoveryRate">&mdash;</div>
             <div class="kpi-label">Recovery Rate</div>
         </div>
     </div>
@@ -146,7 +146,6 @@
             </div>
         </div>
         <div class="chart-wrap"><canvas id="trendChart" height="90"></canvas></div>
-        <img src="wizred.png" alt="" class="chart-watermark">
     </div>
 
     <!-- Row 2: Loss Type breakdown + Portfolio breakdown -->
@@ -156,14 +155,12 @@
                 <div class="card-title"><span class="card-title-icon">&#128202;</span> Loss by Type</div>
             </div>
             <div class="chart-wrap"><canvas id="lossTypeChart" height="160"></canvas></div>
-            <img src="wizred.png" alt="" class="chart-watermark">
         </div>
         <div class="card">
             <div class="card-header">
                 <div class="card-title"><span class="card-title-icon">&#127963;</span> Loss by Portfolio</div>
             </div>
             <div class="chart-wrap"><canvas id="portfolioChart" height="160"></canvas></div>
-            <img src="wizred.png" alt="" class="chart-watermark">
         </div>
     </div>
 
@@ -189,34 +186,30 @@
                 <tbody id="top10Body"></tbody>
             </table>
         </div>
-        <img src="wizred.png" alt="" class="chart-watermark">
     </div>
 
-    <!-- Row 4: Loss by Incident stacked + Dept scatter -->
+    <!-- Row 4: Loss by Incident stacked + Dept bar -->
     <div class="grid-2">
         <div class="card">
             <div class="card-header">
                 <div class="card-title"><span class="card-title-icon">&#128221;</span> Incident Breakdown Over Time</div>
             </div>
             <div class="chart-wrap"><canvas id="incidentTrendChart" height="180"></canvas></div>
-            <img src="wizred.png" alt="" class="chart-watermark">
         </div>
         <div class="card">
             <div class="card-header">
-                <div class="card-title"><span class="card-title-icon">&#128104;&#8205;&#128188;</span> Top 15 Departments — Bar</div>
+                <div class="card-title"><span class="card-title-icon">&#128104;&#8205;&#128188;</span> Top 15 Departments &mdash; Bar</div>
             </div>
             <div class="chart-wrap"><canvas id="deptBarChart" height="180"></canvas></div>
-            <img src="wizred.png" alt="" class="chart-watermark">
         </div>
     </div>
 
-    <!-- Row 5: Recoverable vs Recovered over time -->
+    <!-- Row 5: Recovery analysis -->
     <div class="card">
         <div class="card-header">
-            <div class="card-title"><span class="card-title-icon">&#9989;</span> Recovery Analysis — Loss vs Recovered vs Recoverable</div>
+            <div class="card-title"><span class="card-title-icon">&#9989;</span> Recovery Analysis &mdash; Loss vs Recovered vs Recoverable</div>
         </div>
         <div class="chart-wrap"><canvas id="recoveryChart" height="90"></canvas></div>
-        <img src="wizred.png" alt="" class="chart-watermark">
     </div>
 
 </main>
